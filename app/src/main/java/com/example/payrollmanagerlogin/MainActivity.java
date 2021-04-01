@@ -1,86 +1,81 @@
 package com.example.payrollmanagerlogin;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.pm.PackageInfoCompat;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.renderscript.ScriptGroup;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.security.Key;
+
 public class MainActivity extends AppCompatActivity {
 
-    private EditText eName;
+    private EditText eId;
     private EditText ePassword;
     private Button eLogin;
+    CheckBox eRemember;
     private Button eCancel;
-    private TextView eAttemptsinfo;
-
-    private String Username = "admin";
-    private String Password = "12345678";
-
+    SharedPreferences share;
     boolean isValid = false;
-    private int counter = 3;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        eName = findViewById(R.id.email);
+        eId = findViewById(R.id.email);
         ePassword = findViewById(R.id.password);
         eLogin = findViewById(R.id.btnlogin);
+        eRemember = findViewById(R.id.remember);
         eCancel = findViewById(R.id.btncancel);
-        eAttemptsinfo = findViewById(R.id.tvattempts);
-
-    }
-
-    private boolean validate(String name, String password) {
-        if (name.equals(Username) && password.equals(Password)) {
-            return true;
-        }
-        return false;
+        share = getSharedPreferences("share", MODE_PRIVATE);
     }
 
     public void loginCheck(View view) {
-        String inputName = eName.getText().toString();
+        String inputName = eId.getText().toString();
         String inputPassword = ePassword.getText().toString();
+        boolean checked = eRemember.isChecked();
 
-        if (inputName.isEmpty() || inputPassword.isEmpty()) {
-            Toast.makeText(MainActivity.this, "please enter all details correctly", Toast.LENGTH_SHORT).show();
+        SharedPreferences.Editor editor = share.edit();
+        editor.putString("10", "arun@123");
+        editor.putString("22", "benny@123");
+        editor.putString("33", "catherine@123");
+        editor.putString("44", "denny@123");
+        editor.putString("55", "esha@123");
+        editor.apply();
 
-        } else {
-            isValid = validate(inputName, inputPassword);
-            if (!isValid) {
-                counter--;
-                Toast.makeText(MainActivity.this, "INCORRECT CREDENTIALS", Toast.LENGTH_SHORT).show();
-                eAttemptsinfo.setText("No.of attempts:"+counter);
-                if (counter == 0) {
-                    eLogin.setEnabled(false);
-                }
-            }
-            else {
+        if (share.contains(inputName)) {
+            inputName.equals(share.getString(inputName, ""));
                 Toast.makeText(MainActivity.this, "login sucessfull", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, HomePageActivity.class);
+                startActivity(intent);
+            } else if (share.contains(inputPassword)) {
+                inputPassword.equals(share.getString(inputPassword, ""));
+            } else if (inputName.isEmpty() || inputPassword.isEmpty()) {
+                Toast.makeText(MainActivity.this, "please enter all details correctly", Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-
-    public void clearButton(View view)
-    {
-        String Text=eCancel.getText().toString();
-        if(Text.isEmpty())
+    
+        public void clearButton (View view)
         {
-            Toast.makeText(MainActivity.this, "Field is empty", Toast.LENGTH_SHORT).show();
-
-        }else
-        {
-            eCancel.setText("");
+            eId.setText("");
+            ePassword.setText("");
         }
 
     }
-}
+
+
+
+
+
+
